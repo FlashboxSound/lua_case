@@ -36,3 +36,27 @@ local lang_id = "swe"
 Your code here.
 
 ]]
+
+-- Creating the output table
+local output = {}
+
+-- A function to create a new table from an existing tables data, given a filter
+local function CreateTable(table, filter)
+    -- Creating a temporary table too hold the data
+    local new_table = {}
+    
+    -- 2D for loops to check through the table and then the tables within the table
+    for k, v in pairs(table) do
+        for i, y in pairs(v) do
+            if i == filter then
+                new_table[k] = {["value"] = y, ["text_id"] = v["text_id"]}
+            end
+        end
+    end
+
+    -- Return the temporary table
+    return new_table
+end
+
+output = CreateTable(input, lang_id)
+print(output.footer.text_id .. " " .. output.footer.value)
