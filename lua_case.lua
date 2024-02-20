@@ -43,27 +43,27 @@ local lang_id = "swe"
 Helper functions:
 ]]
 
-function PrintArray(table)
-    for k, v in ipairs(table) do
+local function PrintArray(table)
+    for _, v in ipairs(table) do
         print(v)
     end
 end
 
 
 
-switch = function (choice) -- Analouge to a switch case in C++ to avoid enless if-statments and allow for a default value
+local switch = function (choice) -- Analouge to a switch case in C++ to avoid enless if-statments and allow for a default value
     choice = string.lower(choice) -- Make sure that the input is read even with different formating
-    case =
+    local case =
         {
-        ["eng"] = function ( ) 
+        ["eng"] = function ( )
             lang_id = "eng"
         end,
 
-        ["swe"] = function ( ) 
+        ["swe"] = function ( )
             lang_id = "swe"
         end,
 
-        ["ger"] = function ( ) 
+        ["ger"] = function ( )
             lang_id = "ger"
         end,
 
@@ -73,7 +73,7 @@ switch = function (choice) -- Analouge to a switch case in C++ to avoid enless i
 
         default = function ( )
             io.write("\nYour choice is din't match any of the specified languanges, the program will default to: lorem")
-            lang_id = "lorem" 
+            lang_id = "lorem"
         end,
         }
 
@@ -115,8 +115,7 @@ local output = {} -- Creating the output table
 
 switch(lang_id) -- Make sure that the language ID is not nil or a non exsiting languange, if so default to lorem
 
-function Map(table, filter) -- A function to map an existing tables values to a new table given a filter
-    
+local function Map(table, filter) -- A function to map an existing tables values to a new table given a filter
     local new_table = {} -- Creating a temporary table too hold the data
     local shortened_text = ""
     
@@ -126,7 +125,7 @@ function Map(table, filter) -- A function to map an existing tables values to a 
                 if string.len(j) > 20 then
                     shortened_text = string.sub(j, 1, 17 - (string.len(j)) - 1) .. "..."
                     new_table[k] = {["value"] = j, ["text_id"] = v["text_id"], ["shortened_text"] = shortened_text}
-                else    
+                else
                 new_table[k] = {["value"] = j, ["text_id"] = v["text_id"]}
                 end
             end
@@ -138,10 +137,11 @@ end
 
 output = Map(input, lang_id)
 
-function PrintOutput(table) -- Function to handle printing of the output table and all its key-value pairs
+local function PrintOutput(table) -- Function to handle printing of the output table and all its key-value pairs
     local headline = ""
     local key = ""
     local value = ""
+
     for k, v in pairs(output) do
         headline = k
         io.write(headline .. ":\n")
@@ -173,7 +173,7 @@ function TableToAssositiveArray(table, order) -- Function that transforms a tabl
     local position = 0
     local string = ""
 
-    for k, v in pairs(table) do
+    for _, v in pairs(table) do
         for i, j in pairs(v) do
             if i == "text_id" then
                 position = j
@@ -181,9 +181,7 @@ function TableToAssositiveArray(table, order) -- Function that transforms a tabl
                 string = j
             end
         end
-        
         new_table[position] = string -- Places the new pairs at the correct position according to the [text_id], no sorting needed
-
     end
 
     return new_table
