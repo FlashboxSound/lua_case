@@ -1,9 +1,50 @@
 --[[
+Test constants:
+]]
+
+local input = {
+    greeting = {
+        eng = "Hello World!",
+        swe = "Hallå Världen!",
+        ger = "Hallo Welt!",
+        lorem = "Lorem ipsum!",
+        text_id = 1
+    },
+    headline = {
+        eng = "This is a headline.",
+        swe = "Det här en rubrik.",
+        ger = "Dies ist eine Überschrift.",
+        lorem = "Dolor sit amet.",
+        text_id = 2
+    },
+    content = {
+        eng = "This is the main content. It consists of two sentences.",
+        swe = "Det här är huvudinnehållet. Det består av två meningar.",
+        ger = "Dies ist der Hauptinhalt. Er besteht aus zwei Sätzen.",
+        lorem = "Quisque at luctus libero. Lorem ipsum dolor sit amet.",
+        text_id = 3
+    },
+    footer = {
+        eng = "Last updated: February 15 2024.",
+        swe = "Senast uppdaterad: 15 februari 2024.",
+        ger = "Zuletzt aktualisiert: 15. Februar 2024.",
+        lorem = "Donec iaculis facilisis: Jan 1 1970.",
+        text_id = 4
+    }
+}
+
+local lang_id = "swe"
+
+
+
+
+
+--[[
 Helper functions:
 ]]
 
 function PrintArray(table)
-    for k, v in pairs(table) do
+    for k, v in ipairs(table) do
         print(v)
     end
 end
@@ -46,64 +87,6 @@ end
 
 
 
-function PrintOutput(table) -- Function to handle printing of the output table and all its key-value pairs
-    local headline = ""
-    local key = ""
-    local value = ""
-    for k, v in pairs(output) do
-        headline = k
-        io.write(headline .. ":\n")
-        for i, j in pairs(v) do
-            key = i
-            value = j
-            io.write("\t" .. key .. ": " .. value .. "\n")
-        end
-    end
-end
-
-
-
-
-
---[[
-Test constants:
-]]
-
-local input = {
-    greeting = {
-        eng = "Hello World!",
-        swe = "Hallå Världen!",
-        ger = "Hallo Welt!",
-        lorem = "Lorem ipsum!",
-        text_id = 1
-    },
-    headline = {
-        eng = "This is a headline.",
-        swe = "Det här en rubrik.",
-        ger = "Dies ist eine Überschrift.",
-        lorem = "Dolor sit amet.",
-        text_id = 2
-    },
-    content = {
-        eng = "This is the main content. It consists of two sentences.",
-        swe = "Det här är huvudinnehållet. Det består av två meningar.",
-        ger = "Dies ist der Hauptinhalt. Er besteht aus zwei Sätzen.",
-        lorem = "Quisque at luctus libero. Lorem ipsum dolor sit amet.",
-        text_id = 3
-    },
-    footer = {
-        eng = "Last updated: February 15 2024.",
-        swe = "Senast uppdaterad: 15 februari 2024.",
-        ger = "Zuletzt aktualisiert: 15. Februar 2024.",
-        lorem = "Donec iaculis facilisis: Jan 1 1970.",
-        text_id = 4
-    }
-}
-
-local lang_id = "swe"
-
-
-
 
 
 --[[
@@ -130,16 +113,22 @@ Description: ...
 
 local output = {} -- Creating the output table
 
-switch(lang_id) -- Make sure that the language ID is set to an exsisting language, otherwise set to Lorem
+switch(lang_id) -- Make sure that the language ID is not nil or a non exsiting languange, if so default to lorem
 
 function Map(table, filter) -- A function to map an existing tables values to a new table given a filter
     
     local new_table = {} -- Creating a temporary table too hold the data
+    local shortened_text = ""
     
     for k, v in pairs(table) do -- 2D for loops to check through the table and then the tables within the table
         for i, j in pairs(v) do
             if i == filter then
+                if string.len(j) > 20 then
+                    shortened_text = string.sub(j, 1, 17 - (string.len(j)) - 1) .. "..."
+                    new_table[k] = {["value"] = j, ["text_id"] = v["text_id"], ["shortened_text"] = shortened_text}
+                else    
                 new_table[k] = {["value"] = j, ["text_id"] = v["text_id"]}
+                end
             end
         end
     end
@@ -148,6 +137,21 @@ function Map(table, filter) -- A function to map an existing tables values to a 
 end
 
 output = Map(input, lang_id)
+
+function PrintOutput(table) -- Function to handle printing of the output table and all its key-value pairs
+    local headline = ""
+    local key = ""
+    local value = ""
+    for k, v in pairs(output) do
+        headline = k
+        io.write(headline .. ":\n")
+        for i, j in pairs(v) do
+            key = i
+            value = j
+            io.write("\t" .. key .. ": " .. value .. "\n")
+        end
+    end
+end
 
 io.write("Finalized output table:\n") -- Print the finalized output table
 
