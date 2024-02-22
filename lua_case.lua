@@ -1,13 +1,14 @@
--- LUA CASE FOR STORYKIT_ APPLICATION
--- By André Johanssson
+--[[
+LUA CASE FOR STORYKIT_ APPLICATION
+By André Johanssson
 
--- Code conventions:
--- All variables are formated in snake_case according to the variables given in the case (ie lang_id)
--- All function-names are written in CamelCase
--- Indentation is keept at 4 spaces according to LUA guidelines (they speek of 2 to 4 spaces)
--- Itterators local variables are named according to most fitting for their function or k, v for the outer loop and i, j for the inner loop
--- Global variables are avoided
-
+Code conventions:
+- All variables are formated in snake_case according to the variables given in the case (ie lang_id)
+- All function-names are written in CamelCase
+- Indentation is keept at 4 spaces according to LUA guidelines (they speek of 2 to 4 spaces)
+- Itterators local variables are named according to most fitting for their function or k, v for the outer loop and i, j for the inner loop, _ is used for unused variables
+- Global variables are avoided
+]]
 
 
 
@@ -52,10 +53,10 @@ local lang_id = "swe"
 
 -- Helper functions and variables
 local string_spacer = "\n=   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =\n\n"
-local string_tab = "    "
+local string_tab = "    " -- I know \t exsits but the tab is 8 spaces, breaking the LUA style guide
 
 local function PrintArray(tbl) -- Prints an array
-    for _, v in ipairs(tbl) do
+    for _, v in ipairs(tbl) do -- ipairs instead of pairs because the array has a numreric index
         io.write(string_tab .. v .. "\n")
     end
 end
@@ -148,7 +149,7 @@ local function ExtractLanguage(input_tbl, output_tbl, language)
                     output_tbl[element_type]["value"] = value
                     output_tbl[element_type]["text_id"] = element_table["text_id"] or 0
                 break
-            end
+                end
         end
     end
 end
@@ -157,7 +158,7 @@ end
 -- If so creates a new key value pair [shortened_text] and the text shortened to 17 chars with "..." concatenated to the end
 local function ProccessTable(tbl)
     for element_type, element_table in pairs(tbl) do
-        for key, value in pairs(element_table) do
+        for _, value in pairs(element_table) do
             local shortened_text = ShortenTextIfRequired(value, 20)
             if shortened_text then
                 tbl[element_type]["shortened_text"] = shortened_text
@@ -171,12 +172,10 @@ ExtractLanguage(input, output, lang_id)
 ProccessTable(output)
 
 local function PrintOutput(tbl) -- A function to handle printing of the output table and all its key-value pairs in correct formating
-    for k, v in pairs(tbl) do
-        local headline = k
+    for element_type, element_table in pairs(tbl) do
+        local headline = element_type
         io.write(string_tab .. headline .. ":\n")
-        for i, j in pairs(v) do
-            local key = i
-            local value = j
+        for key, value in pairs(element_table) do
             io.write(string_tab .. string_tab .. key .. ": " .. value .. "\n")
         end
     end
@@ -192,12 +191,12 @@ local function TableToAssositiveArray(tbl)
     local position = 0
     local string = ""
 
-    for _, v in pairs(tbl) do
-        for i, j in pairs(v) do
-            if i == "text_id" then
-                position = j
-            elseif i == "value" then
-                string = j
+    for _, element_table in pairs(tbl) do
+        for key, value in pairs(element_table) do
+            if key == "text_id" then
+                position = value
+            elseif key == "value" then
+                string = value
             end
         end
         new_tbl[position] = string -- Places the new pairs at the correct position according to the [text_id], no sorting needed
