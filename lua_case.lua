@@ -8,6 +8,10 @@ Code conventions:
 - Indentation is keept at 4 spaces according to LUA guidelines (they speek of 2 to 4 spaces)
 - Itterators local variables are named according to most fitting for their function or k, v for the outer loop and i, j for the inner loop, _ is used for unused variables
 - Global variables are avoided
+
+How to use:
+- Run the code in the terminal and read the output from their or examine the code directly. The input function to choose a language ID is primarily
+built for debuging/testing so do feel free to use that.
 ]]
 
 
