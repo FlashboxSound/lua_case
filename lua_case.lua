@@ -1,7 +1,4 @@
---[[
-Test constants:
-]]
-
+-- Test constants:
 local input = {
     greeting = {
         eng = "Hello World!",
@@ -37,21 +34,26 @@ local lang_id = "swe"
 
 
 
-
-
---[[
-Helper functions:
-]]
-
-local function PrintArray(table)
-    for _, v in ipairs(table) do
+-- Helper functions:
+local function PrintArray(tbl)
+    for _, v in ipairs(tbl) do
         print(v)
     end
 end
 
 
+-- Function to shorten any given text if it's longer than the given cap
+local function ShortenTextIfRequired(text, capAtLen)
+    if string.len(text) > capAtLen then
+        return string.sub(text, 1, capAtLen - 3) .. "..."
+    else
+        return nil
+    end
+end
 
-local switch = function (choice) -- Analouge to a switch case in C++ to avoid enless if-statments and allow for a default value
+
+
+local ChooseLanguangeID = function (choice) -- Switch case (C) style implementation of a language choice to avoid enless if-statments and allow for a default value
     choice = string.lower(choice) -- Make sure that the input is read even with different formating
     local case =
         {
@@ -86,68 +88,75 @@ local switch = function (choice) -- Analouge to a switch case in C++ to avoid en
 end
 
 
-
-
-
---[[
-Input module for picking a language ID. All reading and printing is done directly in the terminal. This is soley for testing purposes.
-]]
+-- Input module for picking a language ID. All reading and printing is done directly in the terminal. This is soley for testing purposes.
 
 local answer
 io.write("Choose language ID (eng, swe, ger or lorem): ")
 answer = io.read()
 
-switch(answer)
+ChooseLanguangeID(answer)
 
 io.write("\n\n= = = = = = = = = = = = = = = = = = = =\n\n")
 
 
 
+-- Task: Create an array table where the strings are stored and ordered by text_id from lowest to highest id
+-- Description: ...
 
+local output = {
+    greeting = {
+        value = "",
+        text_id = 0
+    },
+    headline = {
+        value = "",
+        text_id = 0
+    },
+    content = {
+        value = "",
+        text_id = 0
+    },
+    footer = {
+        value = "",
+        text_id = 0
+    }
+} -- Creating the output table
 
---[[
-Task: Create an array table where the strings are stored and ordered by text_id from lowest to highest id
+ChooseLanguangeID(lang_id) -- Make sure that the language ID is not nil or a non exsiting languange, if so default to lorem
 
-Description: ...
-]]
-
-local output = {} -- Creating the output table
-
-switch(lang_id) -- Make sure that the language ID is not nil or a non exsiting languange, if so default to lorem
-
-local function Map(table, filter) -- A function to map an existing tables values to a new table given a filter
-    local new_table = {} -- Creating a temporary table too hold the data
-    local shortened_text = ""
-    
-    for k, v in pairs(table) do -- 2D for loops to check through the table and then the tables within the table
-        for i, j in pairs(v) do
-            if i == filter then
-                if string.len(j) > 20 then
-                    shortened_text = string.sub(j, 1, 17 - (string.len(j)) - 1) .. "..."
-                    new_table[k] = {["value"] = j, ["text_id"] = v["text_id"], ["shortened_text"] = shortened_text}
-                else
-                new_table[k] = {["value"] = j, ["text_id"] = v["text_id"]}
-                end
+local function ExtractLanguage(input_tbl, output_tbl, language) -- A function to map an existing tables values to a new table given a filter
+    for element_type, element_table in pairs(input_tbl) do
+        for key, value in pairs(element_table) do
+                if key == language then
+                    output_tbl[element_type]["value"] = value
+                    output_tbl[element_type]["text_id"] = element_table["text_id"] or 0
+                break
             end
         end
     end
-
-    return new_table -- Return the new table
 end
 
-output = Map(input, lang_id)
+local function ProccessTable(tbl)
+    for element_type, element_table in pairs(tbl) do
+        for key, value in pairs(element_table) do
+            local shortened_text = ShortenTextIfRequired(value, 20)
+            if shortened_text then
+                tbl[element_type]["shortened_text"] = shortened_text
+            end
+        end
+    end
+end
 
-local function PrintOutput(table) -- Function to handle printing of the output table and all its key-value pairs
-    local headline = ""
-    local key = ""
-    local value = ""
+ExtractLanguage(input, output, lang_id)
+ProccessTable(output)
 
-    for k, v in pairs(output) do
-        headline = k
+local function PrintOutput(tbl) -- Function to handle printing of the output table and all its key-value pairs
+    for k, v in pairs(tbl) do
+        local headline = k
         io.write(headline .. ":\n")
         for i, j in pairs(v) do
-            key = i
-            value = j
+            local key = i
+            local value = j
             io.write("\t" .. key .. ": " .. value .. "\n")
         end
     end
@@ -160,20 +169,15 @@ io.write("\n= = = = = = = = = = = = = = = = = = = =\n\n")
 
 
 
+-- Task: Create an array table where the strings are stored and ordered by text_id from lowest to highest id
+-- Description: ...
 
-
---[[
-Task: Create an array table where the strings are stored and ordered by text_id from lowest to highest id
-
-Description: ...
-]]
-
-function TableToAssositiveArray(table, order) -- Function that transforms a table with multiple levels to a flat, associative array with the key [text_id] and value [value]
+function TableToAssositiveArray(tbl, order) -- Function that transforms a table with multiple levels to a flat, associative array with the key [text_id] and value [value]
     local new_table = {}
     local position = 0
     local string = ""
 
-    for _, v in pairs(table) do
+    for _, v in pairs(tbl) do
         for i, j in pairs(v) do
             if i == "text_id" then
                 position = j
@@ -197,13 +201,8 @@ io.write("\n= = = = = = = = = = = = = = = = = = = =\n\n")
 
 
 
-
-
---[[
-Task: Create an array table where the strings are stored and sorted from fewest characters to most characters
-
-Description: ...
-]]
+-- Task: Create an array table where the strings are stored and sorted from fewest characters to most characters
+-- Description: ...
 
 local ordered_by_lenght = ordered_by_id
 table.sort(ordered_by_lenght, function(a,b) return #a<#b end)
